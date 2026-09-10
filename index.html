@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#102653">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="親愛的返工・放工時間表">
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="style.css?v=20260910-3">
+<title>親愛的返工・放工時間表</title>
+</head>
+<body>
+<main class="app">
+<header class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-shade"></div>
+  <div class="hero-content">
+    <div class="hero-top"><span id="clock">--:--</span><button id="refreshBtn" class="refresh" aria-label="重新整理">↻</button></div>
+    <div class="hero-copy">
+      <div class="hero-kicker">為你整嘅專屬通勤小助手 ❤️</div>
+      <h1>親愛的<span>返工・放工時間表</span></h1>
+      <p id="heroMessage">早晨呀親愛的，今日返工都要開開心心呀 ☀️</p>
+    </div>
+  </div>
+</header>
+
+<nav class="mode-tabs" aria-label="行程方向">
+  <button class="mode active" data-direction="outbound"><b>☀️</b><span>返工</span><small>去觀塘</small></button>
+  <button class="mode" data-direction="inbound"><b>🌙</b><span>放工</span><small>返屋企</small></button>
+</nav>
+
+<section class="route-card card">
+  <div class="route-badge">259D</div>
+  <div class="route-info"><strong id="directionTitle">往鯉魚門邨</strong><span id="routeText">湖景邨湖翠樓 → 觀塘道休憩處</span></div>
+  <span class="chevron">›</span>
+</section>
+
+<section class="bus-card card">
+  <div class="bus-card-head"><span>🚏 <span id="primaryStopLabel">下一班 259D</span></span><span id="arrivalPill" class="arrival-pill">實時</span></div>
+  <div class="bus-main">
+    <div class="bus-copy">
+      <div id="nextMinutes" class="big-minutes">--</div>
+      <div id="nextTime" class="big-time">--:--</div>
+      <div id="nextDestination" class="muted">正在取得實時 ETA…</div>
+    </div>
+    <div class="bus-visual"><img src="kmb-259d-cutout.png" alt="卡通化九巴 259D 巴士"></div>
+  </div>
+  <div class="progress"><span id="progressBar"></span></div>
+  <div class="later-head"><b>之後班次</b><span>每 60 秒更新</span></div>
+  <div id="etaList" class="eta-list"><div class="loading">正在更新班次…</div></div>
+</section>
+
+<section id="secondStopCard" class="bus-card card second-stop-card hidden">
+  <div class="bus-card-head"><span>📍 <span id="secondStopTitle">牛頭角下邨（KT654）</span></span><span class="arrival-pill second-pill">放工第 2 站</span></div>
+  <div class="second-stop-route">259D 往屯門（龍門居）</div>
+  <div class="second-next">
+    <div><div id="secondMinutes" class="second-big-minutes">--</div><div id="secondTime" class="second-big-time">--:--</div></div>
+    <div class="second-bus-art"><img src="kmb-259d-cutout.png" alt="卡通化九巴 259D 巴士"></div>
+  </div>
+  <div class="second-stop-note" id="secondStopNote">正在取得實時資料…</div>
+  <div class="later-head"><b>之後班次</b><span>每 60 秒更新</span></div>
+  <div id="secondEtaList" class="eta-list"><div class="loading">正在更新班次…</div></div>
+</section>
+
+<div class="two-col">
+  <section class="traffic-card card"><div class="card-title">🚦 今日條路點？ <span id="trafficUpdated">—</span></div><div id="trafficEmoji" class="traffic-emoji">🙂</div><div id="trafficLabel" class="traffic-label">正在分析</div><div id="trafficNote" class="traffic-note">根據實時班次推算</div></section>
+  <section class="home-card card"><div class="card-title">🏠 <span id="destinationHeading">預計到達觀塘</span></div><div id="destinationTime" class="home-time">--:--</div><div id="destinationName" class="home-name">觀塘道休憩處</div><div id="destinationMeta" class="home-meta">等待實時資料</div><div class="house-art">🏠💕</div></section>
+</div>
+
+<section class="love-card card"><div class="love-icon">💗</div><div><h2>親愛的小提示</h2><p id="loveMessage">早晨呀親愛的，返工路上小心。<br>今日都加油呀，我支持你 ❤️</p></div><div class="love-art">🥰<br><span>我等你！</span></div></section>
+<div class="status-row"><span>↻ <span id="updated">最後更新：—</span></span><span><i class="live-dot"></i> 每 60 秒自動更新</span></div>
+<div id="errorBox" class="error hidden"></div>
+<div class="footer-love">♡ 無論幾遠，屋企永遠有你嘅位置 ♡</div>
+</main>
+<script src="app.js?v=20260910-3"></script>
+</body>
+</html>

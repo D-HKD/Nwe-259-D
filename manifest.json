@@ -1,0 +1,9 @@
+{
+  "name":"親愛的返工・放工時間表",
+  "short_name":"259D通勤助手",
+  "start_url":"./",
+  "display":"standalone",
+  "background_color":"#172447",
+  "theme_color":"#172447",
+  "icons":[]
+}
