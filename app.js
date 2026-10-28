@@ -77,7 +77,9 @@ async function load(){
 }
 function clock(){let d=new Date();$('clock').textContent=new Intl.DateTimeFormat('zh-HK',{hour:'2-digit',minute:'2-digit',hour12:false,timeZone:'Asia/Hong_Kong'}).format(d)}
 document.querySelectorAll('.mode').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.mode').forEach(x=>x.classList.remove('active'));b.classList.add('active');direction=b.dataset.direction;load()}));
-$('refreshBtn').addEventListener('click',load);clock();setInterval(clock,1000);load();setInterval(load,60000);
+$('refreshBtn').addEventListener('click',load);clock();setInterval(clock,1000);load();setInterval(function(){ if (!document.hidden) load(); }, 60000);
+// 由其他 App 切返嚟即刻更新一次（唔使等最多 60 秒）
+document.addEventListener('visibilitychange', function(){ if (!document.hidden) load(); });
 /* Service Worker：開得快、離線都開到（唔會快取實時資料） */
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function () {
