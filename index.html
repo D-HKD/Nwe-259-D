@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="zh-Hant">
+<html lang="zh-Hant" data-season="spring" data-part="morning" data-weather="cloudy" data-dark="0">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -8,20 +8,26 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="親愛的返工・放工時間表">
 <link rel="manifest" href="manifest.json">
-<link rel="stylesheet" href="style.css?v=20260910-3">
+<link rel="stylesheet" href="style.css?v=20261028-theme">
 <title>親愛的返工・放工時間表</title>
 </head>
 <body>
 <main class="app">
 <header class="hero">
   <div class="hero-bg"></div>
+  <div class="hero-tint"></div>
   <div class="hero-shade"></div>
+  <div class="hero-fx" aria-hidden="true">
+    <i class="fx fx-sun"></i><i class="fx fx-clouds"></i><i class="fx fx-rain"></i><i class="fx fx-mist"></i><i class="fx fx-heat"></i><i class="fx fx-frost"></i><i class="fx fx-flash"></i>
+  </div>
   <div class="hero-content">
     <div class="hero-top"><span id="clock">--:--</span><button id="refreshBtn" class="refresh" aria-label="重新整理">↻</button></div>
     <div class="hero-copy">
-      <div class="hero-kicker">為你整嘅專屬通勤小助手 ❤️</div>
+      <div class="hero-kicker" id="heroKicker">為你整嘅專屬通勤小助手 ❤️</div>
       <h1>親愛的<span>返工・放工時間表</span></h1>
       <p id="heroMessage">早晨呀親愛的，今日返工都要開開心心呀 ☀️</p>
+      <span class="weather-chip" id="weatherChip" hidden>⛅ --°C</span>
+      <p class="weather-note" id="weatherNote"></p>
     </div>
   </div>
 </header>
@@ -74,6 +80,6 @@
 <div id="errorBox" class="error hidden"></div>
 <div class="footer-love">♡ 無論幾遠，屋企永遠有你嘅位置 ♡</div>
 </main>
-<script src="app.js?v=20260910-3"></script>
+<script src="theme.js?v=20261028-theme"></script>`n<script src="app.js?v=20261028-theme"></script>
 </body>
 </html>

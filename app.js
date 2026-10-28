@@ -51,7 +51,7 @@ function render(d){
   let later=b.slice(1,3);$('etaList').innerHTML=later.length?later.map(x=>`<div class="eta-item"><strong>${fmt(x.eta)}</strong><span>${minText(x.minutes)}</span></div>`).join(''):'<div class="loading">暫時沒有更多班次</div>';
   renderSecondStop(d,b);
   let de=destinationEstimate(first,d);if(de){$('destinationTime').textContent=fmt(de.eta);$('destinationName').textContent=r.dest;$('destinationMeta').textContent=de.official?(de.minutes==null?'KMB 目的地 ETA':`約 ${Math.max(0,Math.round(de.minutes))} 分鐘後`):`按實時班次推算，車程約 ${DEST_MINUTES[direction]} 分鐘`}else{$('destinationTime').textContent='--:--';$('destinationName').textContent=r.dest;$('destinationMeta').textContent='暫時沒有足夠資料推算'}
-  $('heroMessage').textContent=direction==='inbound'?'辛苦咗一日，放工慢慢返屋企，我會一直等你 ❤️':'早晨呀親愛的，今日返工都要開開心心呀 ☀️';
+  // heroMessage 由 theme.js 按「季節／時段／天氣」決定，唔在這裡覆寫。
   $('loveMessage').innerHTML=direction==='inbound'?'辛苦咗一日，放工記得食啲嘢先返嚟。<br>路上小心，我一直喺度等你 ❤️':'早晨呀親愛的，返工路上小心。<br>今日都加油呀，我支持你 ❤️';
   $('destinationHeading').textContent=direction==='inbound'?'預計返到屋企':'預計到達觀塘';
 }

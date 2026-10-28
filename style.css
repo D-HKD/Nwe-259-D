@@ -41,3 +41,184 @@ html{background:#f8edf3}body{margin:0;min-height:100vh;background:linear-gradien
   .second-big-minutes{font-size:31px}
   .second-bus-art{height:96px}
 }
+
+/* =================================================================
+   主題層：季節 × 時段 × 天氣
+   JS 只設定 <html data-season data-part data-weather>，
+   所有顏色與動畫都在這裡，唔會影響原本排版。
+   ================================================================= */
+
+html{
+  --accent:#ff6c9d;
+  --accent-2:#ffd0dd;
+  --accent-wash:#ffe4ef;
+  --page-1:#dcecff; --page-2:#f7dce9; --page-3:#fff8fb;
+  --card-bg:#ffffff; --card-grad:#fff4f8; --card-ink:#17233e; --card-sub:#7a8498;
+  --pill-bg:rgba(255,255,255,.9); --pill-line:#ffffff; --pill-ink:#6f7d98;
+  --deep-1:#17264b; --deep-2:#294474;
+  --status:#66748e;
+  --hero-tint:rgba(255,140,180,.34);
+  --rain-op:.55;
+}
+
+/* ── 四季 ─────────────────────────────────────────────── */
+html[data-season="spring"]{
+  --accent:#ff6c9d; --accent-2:#ffd0dd; --accent-wash:#ffe4ef;
+  --page-1:#ffe9f4; --page-2:#e7f7ff; --page-3:#fffafd;
+  --card-grad:#ffedf4; --hero-tint:rgba(255,140,180,.34);
+}
+html[data-season="summer"]{
+  --accent:#17a2d8; --accent-2:#a9e6ff; --accent-wash:#dff4ff;
+  --page-1:#d6f2ff; --page-2:#fff2cf; --page-3:#f7fdff;
+  --card-grad:#e4f6ff; --hero-tint:rgba(90,200,255,.36);
+}
+html[data-season="autumn"]{
+  --accent:#e07a3f; --accent-2:#ffc79a; --accent-wash:#ffeeda;
+  --page-1:#ffe2c9; --page-2:#ffeedd; --page-3:#fffaf3;
+  --card-grad:#ffeeda; --hero-tint:rgba(255,160,80,.40);
+}
+html[data-season="winter"]{
+  --accent:#4f83c9; --accent-2:#bcd9ff; --accent-wash:#e6f0ff;
+  --page-1:#e2ecff; --page-2:#eef7ff; --page-3:#fbfdff;
+  --card-grad:#e8f1ff; --hero-tint:rgba(130,180,255,.38);
+}
+
+/* ── 時段（決定光暗） ─────────────────────────────────── */
+html[data-part="dawn"]{ --hero-tint:rgba(255,190,150,.36); }
+html[data-part="dusk"]{
+  --page-1:#ffd9c2; --page-2:#ffe3ea; --page-3:#fff6f2;
+  --hero-tint:rgba(255,140,90,.44);
+}
+html[data-part="evening"], html[data-part="night"]{
+  --page-1:#0a1122; --page-2:#101c33; --page-3:#070b14;
+  --card-bg:#111c33; --card-grad:#152340; --card-ink:#e8eeff; --card-sub:#94a5c4;
+  --pill-bg:rgba(20,32,56,.82); --pill-line:rgba(120,160,220,.28); --pill-ink:#a9bbd8;
+  --deep-1:#0a1428; --deep-2:#16243f;
+  --status:#8fa2c2;
+  --hero-tint:rgba(20,40,90,.55);
+}
+
+/* ── 把原本硬編顏色接上變數 ───────────────────────────── */
+body{background:linear-gradient(180deg,var(--page-1) 0,var(--page-2) 42%,var(--page-3) 100%);transition:background .9s ease}
+html{background:var(--page-3)}
+.route-card{background:linear-gradient(145deg,var(--deep-1),var(--deep-2))}
+.bus-card{background:linear-gradient(145deg,var(--deep-1),var(--deep-2))}
+.second-stop-card{background:linear-gradient(145deg,var(--deep-1),var(--deep-2))}
+.route-badge{background:linear-gradient(145deg,var(--accent),var(--accent-2));box-shadow:0 7px 15px var(--accent-wash)}
+.arrival-pill{background:var(--accent);box-shadow:0 5px 12px var(--accent-wash)}
+.big-minutes,.second-big-minutes{color:var(--accent-2)}
+.progress span{background:linear-gradient(90deg,var(--accent),var(--accent-2))}
+.mode-tabs{background:var(--pill-bg);border-color:var(--pill-line)}
+.mode{color:var(--pill-ink)}
+.mode.active{background:linear-gradient(135deg,var(--card-bg),var(--accent-wash));color:var(--card-ink)}
+.mode[data-direction="inbound"].active{background:linear-gradient(135deg,var(--deep-1),var(--deep-2));color:#fff}
+.traffic-card{background:linear-gradient(145deg,var(--card-bg),var(--card-grad))}
+.home-card{background:linear-gradient(145deg,var(--card-bg),var(--accent-wash))}
+.love-card{background:linear-gradient(135deg,var(--card-bg),var(--accent-wash))}
+.card-title,.home-name{color:var(--card-ink)}
+.traffic-note,.home-meta{color:var(--card-sub)}
+.home-time{color:var(--accent)}
+.status-row{color:var(--status)}
+.footer-love{color:var(--accent)}
+.love-art span{color:var(--accent)}
+.card{border-color:rgba(255,255,255,.28)}
+
+/* 深色時段：淺色卡的邊框與陰影要調暗 */
+html[data-dark="1"] .card{box-shadow:0 14px 30px rgba(0,0,0,.45);border-color:rgba(120,160,220,.18)}
+html[data-dark="1"] .traffic-label{color:#7fd6a3}
+html[data-dark="1"] .mode.active{box-shadow:0 6px 18px rgba(0,0,0,.4)}
+
+/* ── 天氣特效層 ───────────────────────────────────────── */
+.hero-fx{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden}
+.fx{position:absolute;inset:0;opacity:0;transition:opacity .8s ease}
+.hero-tint{position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:radial-gradient(120% 90% at 78% 12%,var(--hero-tint),transparent 62%);
+  mix-blend-mode:soft-light;transition:background .9s ease}
+
+/* 晴：右上柔光 */
+.fx-sun{background:radial-gradient(circle at 82% 16%,rgba(255,244,200,.95) 0,rgba(255,214,120,.45) 18%,transparent 46%)}
+html[data-weather="clear"] .fx-sun{opacity:1;animation:sunPulse 7s ease-in-out infinite}
+@keyframes sunPulse{0%,100%{transform:scale(1);opacity:.9}50%{transform:scale(1.06);opacity:1}}
+
+/* 多雲：兩層雲慢慢飄 */
+.fx-clouds{background:
+  radial-gradient(60% 34% at 18% 26%,rgba(255,255,255,.42),transparent 70%),
+  radial-gradient(52% 30% at 62% 14%,rgba(255,255,255,.32),transparent 72%),
+  radial-gradient(66% 30% at 88% 34%,rgba(255,255,255,.26),transparent 74%)}
+html[data-weather="cloudy"] .fx-clouds{opacity:1;animation:cloudDrift 26s linear infinite}
+@keyframes cloudDrift{0%{transform:translateX(-3%)}50%{transform:translateX(3%)}100%{transform:translateX(-3%)}}
+
+/* 雨：斜線雨幕 */
+.fx-rain{background-image:repeating-linear-gradient(102deg,
+  rgba(255,255,255,.55) 0 1px, transparent 1px 7px);
+  background-size:auto 100%;opacity:0}
+html[data-weather="rain"] .fx-rain,
+html[data-weather="storm"] .fx-rain{opacity:var(--rain-op);animation:rainFall .55s linear infinite}
+@keyframes rainFall{from{background-position:0 0}to{background-position:-18px 120px}}
+
+/* 雷暴：雨 + 偶爾閃光 */
+.fx-flash{background:rgba(220,235,255,.9);opacity:0}
+html[data-weather="storm"] .fx-flash{animation:lightning 6.5s ease-in-out infinite}
+@keyframes lightning{0%,88%,100%{opacity:0}89%{opacity:.55}90%{opacity:0}92%{opacity:.35}93%{opacity:0}}
+
+/* 潮濕：霧氣 */
+.fx-mist{background:linear-gradient(180deg,rgba(255,255,255,.55),rgba(255,255,255,.12) 45%,transparent 75%);
+  filter:blur(2px)}
+html[data-weather="mist"] .fx-mist{opacity:1;animation:mistDrift 18s ease-in-out infinite}
+@keyframes mistDrift{0%,100%{transform:translateX(-2%)}50%{transform:translateX(2%)}}
+
+/* 熱：地面熱浪 */
+.fx-heat{background:linear-gradient(0deg,rgba(255,170,90,.42),transparent 55%)}
+html[data-weather="hot"] .fx-heat{opacity:1;animation:heatWave 4.5s ease-in-out infinite}
+@keyframes heatWave{0%,100%{transform:translateY(2%)}50%{transform:translateY(-2%)}}
+
+/* 冷：角落結霜 */
+.fx-frost{background:
+  radial-gradient(38% 30% at 0% 0%,rgba(225,240,255,.75),transparent 70%),
+  radial-gradient(34% 26% at 100% 0%,rgba(210,232,255,.6),transparent 72%)}
+html[data-weather="cold"] .fx-frost{opacity:1}
+
+/* ── 頁首天氣標籤 ─────────────────────────────────────── */
+.weather-chip{display:inline-flex;align-items:center;gap:5px;margin-top:9px;
+  background:rgba(12,26,50,.42);border:1px solid rgba(255,255,255,.30);
+  color:#fff;font-size:12px;font-weight:900;padding:6px 11px;border-radius:999px;
+  backdrop-filter:blur(8px);text-shadow:none}
+.weather-note{font-size:11px;font-weight:700;margin:8px 0 0;color:#eaf1ff;
+  text-shadow:0 2px 8px rgba(10,22,45,.6);max-width:330px;line-height:1.5;opacity:.92}
+
+/* 減少動態：關掉所有天氣動畫（原本已支援 prefers-reduced-motion） */
+@media(prefers-reduced-motion:reduce){
+  .fx,.hero-tint{animation:none!important;transition:none!important}
+  body{transition:none!important}
+}
+/* ── 夜晚修正：避免淺色 wash 令卡面變白、頁首圖片太亮 ── */
+html[data-dark="1"]{
+  --accent-wash:#182742;
+  --card-grad:#152340;
+}
+html[data-dark="1"] .hero-shade{
+  background:
+    linear-gradient(90deg,rgba(4,8,18,.74) 0%,rgba(6,12,26,.58) 47%,rgba(4,10,22,.44) 100%),
+    linear-gradient(180deg,rgba(4,10,22,.28) 28%,rgba(3,7,16,.88) 100%);
+}
+/* 夜晚天清：收起太陽光暈，改做點點星光 */
+html[data-dark="1"] .fx-sun{opacity:0!important;animation:none!important}
+html[data-dark="1"][data-weather="clear"] .hero-fx::after{
+  content:"";position:absolute;inset:0;opacity:.85;
+  background-image:
+    radial-gradient(1.6px 1.6px at 14% 16%,#fff,transparent 60%),
+    radial-gradient(1.4px 1.4px at 31% 9%,#eaf3ff,transparent 60%),
+    radial-gradient(1.8px 1.8px at 52% 21%,#fff,transparent 60%),
+    radial-gradient(1.3px 1.3px at 68% 12%,#dceaff,transparent 60%),
+    radial-gradient(1.5px 1.5px at 86% 26%,#fff,transparent 60%),
+    radial-gradient(1.2px 1.2px at 42% 33%,#e8f2ff,transparent 60%);
+  animation:twinkle 5s ease-in-out infinite;
+}
+@keyframes twinkle{0%,100%{opacity:.55}50%{opacity:.95}}
+
+/* 黃昏：頁首略為壓暗，突出逆光感 */
+html[data-part="dusk"] .hero-shade{
+  background:
+    linear-gradient(90deg,rgba(60,26,10,.55) 0%,rgba(70,32,16,.30) 48%,rgba(80,36,18,.10) 100%),
+    linear-gradient(180deg,rgba(255,180,120,.10) 30%,rgba(40,16,8,.72) 100%);
+}
