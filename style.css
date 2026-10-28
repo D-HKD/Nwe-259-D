@@ -267,3 +267,88 @@ html[data-dark="1"] .gap-note.warn{color:#ffc37a}
 /* 預設（未設定目標）狀態都要睇得到 */
 .home-verdict{color:var(--card-sub)}
 .home-verdict::after{content:" ✎";font-size:10px;opacity:.7}
+/* =================================================================
+   天氣特效加強版：原本太淡（雲 26–42% 白、漂移 ±3%），相片上幾乎睇唔到
+   ================================================================= */
+
+/* 1. 永遠有一層極慢流動嘅光（任何天氣都有動感） */
+.hero-fx::before{
+  content:"";position:absolute;inset:-18%;pointer-events:none;
+  background:
+    radial-gradient(48% 38% at 28% 22%,rgba(255,255,255,.20),transparent 70%),
+    radial-gradient(42% 34% at 72% 58%,rgba(150,205,255,.16),transparent 72%);
+  animation:ambientDrift 26s ease-in-out infinite alternate;
+}
+@keyframes ambientDrift{
+  0%{transform:translate3d(-5%,-3%,0) scale(1)}
+  100%{transform:translate3d(5%,4%,0) scale(1.10)}
+}
+
+/* 2. 雲：加大濃度與移動幅度 */
+.fx-clouds{background:
+  radial-gradient(58% 32% at 16% 24%,rgba(255,255,255,.62),transparent 70%),
+  radial-gradient(50% 28% at 58% 12%,rgba(255,255,255,.50),transparent 72%),
+  radial-gradient(64% 30% at 88% 32%,rgba(255,255,255,.42),transparent 74%)}
+html[data-weather="cloudy"] .fx-clouds{opacity:1;animation:cloudDrift 17s ease-in-out infinite alternate}
+@keyframes cloudDrift{0%{transform:translateX(-7%)}100%{transform:translateX(7%)}}
+
+/* 3. 晴：光暈更明顯，緩慢呼吸 */
+.fx-sun{background:radial-gradient(circle at 82% 14%,rgba(255,248,214,.98) 0,rgba(255,206,110,.62) 16%,rgba(255,180,80,.22) 34%,transparent 58%)}
+html[data-weather="clear"] .fx-sun{opacity:1;animation:sunPulse 6s ease-in-out infinite}
+@keyframes sunPulse{0%,100%{transform:scale(1);opacity:.85}50%{transform:scale(1.10);opacity:1}}
+
+/* 4. 雨：更粗、更快、更密 */
+.fx-rain{background-image:repeating-linear-gradient(101deg,
+  rgba(255,255,255,.75) 0 2px, transparent 2px 9px, rgba(255,255,255,.35) 9px 10px, transparent 10px 15px)}
+html[data-weather="rain"] .fx-rain,
+html[data-weather="storm"] .fx-rain{opacity:.85;animation:rainFall .42s linear infinite}
+@keyframes rainFall{from{background-position:0 0}to{background-position:-24px 140px}}
+
+/* 5. 雨／風雨時頁首整體壓暗，令雨絲更突出 */
+html[data-weather="rain"] .hero-shade,
+html[data-weather="storm"] .hero-shade{
+  background:
+    linear-gradient(90deg,rgba(10,24,46,.70) 0%,rgba(12,28,52,.52) 47%,rgba(10,22,42,.36) 100%),
+    linear-gradient(180deg,rgba(16,34,60,.30) 25%,rgba(8,16,32,.84) 100%);
+}
+
+/* 6. 雷暴閃光更明顯 */
+html[data-weather="storm"] .fx-flash{animation:lightning 5.5s ease-in-out infinite}
+@keyframes lightning{0%,86%,100%{opacity:0}87%{opacity:.75}88%{opacity:.05}90%{opacity:.55}91%{opacity:0}}
+
+/* 7. 潮濕霧氣、炎熱熱浪、寒冷結霜 —— 提高可見度 */
+.fx-mist{background:linear-gradient(180deg,rgba(255,255,255,.62),rgba(255,255,255,.20) 45%,transparent 78%);filter:blur(3px)}
+html[data-weather="mist"] .fx-mist{opacity:1;animation:mistDrift 14s ease-in-out infinite alternate}
+@keyframes mistDrift{0%{transform:translateX(-4%) scaleY(1)}100%{transform:translateX(4%) scaleY(1.06)}}
+
+.fx-heat{background:linear-gradient(0deg,rgba(255,160,70,.50),rgba(255,200,120,.12) 40%,transparent 62%)}
+html[data-weather="hot"] .fx-heat{opacity:1;animation:heatWave 3.8s ease-in-out infinite}
+@keyframes heatWave{0%,100%{transform:translateY(3%) scaleY(1)}50%{transform:translateY(-3%) scaleY(1.05)}}
+
+.fx-frost{background:
+  radial-gradient(36% 30% at 0% 0%,rgba(235,246,255,.85),transparent 68%),
+  radial-gradient(32% 26% at 100% 0%,rgba(215,236,255,.72),transparent 70%)}
+html[data-weather="cold"] .fx-frost{opacity:1}
+
+/* 8. 定位按鈕 */
+.loc-chip{display:block;width:calc(100% - 10px);margin:0 5px 8px;padding:9px 12px;border-radius:14px;
+  border:1px dashed rgba(120,150,200,.55);background:rgba(255,255,255,.72);color:#41506b;
+  font-size:12px;font-weight:800;cursor:pointer}
+.loc-chip.ok{border-style:solid;border-color:#35b57f;color:#1f8f5f;background:rgba(235,255,245,.9)}
+.loc-chip.busy{opacity:.75}
+.loc-chip.fail{border-color:#d8577a;color:#b03a5b;background:rgba(255,240,244,.92)}
+html[data-dark="1"] .loc-chip{background:rgba(20,34,58,.85);color:#b9c8e2;border-color:rgba(120,160,220,.5)}
+html[data-dark="1"] .loc-chip.ok{color:#7fe3b0;border-color:#2f8f66}
+html[data-dark="1"] .loc-chip.fail{color:#ff9db4;border-color:#8f3550}
+
+/* 9. 減少動態：保留靜態天氣視覺，只停動畫 */
+@media(prefers-reduced-motion:reduce){
+  .hero-fx::before,.fx{animation:none!important}
+}
+/* 10. 永遠見到嘅動感：頁首照片緩慢推拉（Ken Burns）
+      —— 唔論咩天氣、咩季節都有明顯但唔騷擾嘅動態 */
+.hero-bg{animation:kenburns 26s ease-in-out infinite alternate;will-change:transform}
+@keyframes kenburns{
+  0%{transform:scale(1.03) translate3d(0,0,0)}
+  100%{transform:scale(1.13) translate3d(-2.2%,-1.6%,0)}
+}

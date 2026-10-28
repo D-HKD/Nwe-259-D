@@ -80,7 +80,8 @@ async function load(){
 function clock(){let d=new Date();$('clock').textContent=new Intl.DateTimeFormat('zh-HK',{hour:'2-digit',minute:'2-digit',hour12:false,timeZone:'Asia/Hong_Kong'}).format(d)}
 document.querySelectorAll('.mode').forEach(b=>b.addEventListener('click',()=>{manualDirection=true;document.querySelectorAll('.mode').forEach(x=>x.classList.remove('active'));b.classList.add('active');direction=b.dataset.direction;load()}));
 $('refreshBtn').addEventListener('click',load);
-$('arrivalVerdict').addEventListener('click',editTarget);loadTarget();clock();setInterval(clock,1000);load();bootGeo();setInterval(function(){ if (!document.hidden) load(); }, 60000);
+$('arrivalVerdict').addEventListener('click',editTarget);
+$('locBtn').addEventListener('click',locateFromButton);loadTarget();clock();setInterval(clock,1000);load();bootGeo();setInterval(function(){ if (!document.hidden) load(); }, 60000);
 
 /* ================================================================
    自動偵測位置 → 自動揀方向
@@ -151,11 +152,48 @@ function requestFix() {
   navigator.geolocation.getCurrentPosition(function (pos) {
     saveGeo(pos.coords.latitude, pos.coords.longitude);
     applyLocation(pos.coords.latitude, pos.coords.longitude);
+    markLocated(pos.coords.latitude, pos.coords.longitude);
   }, function () { /* 拒絕或失敗：沿用預設方向，唔騷擾用戶 */ },
     { enableHighAccuracy: false, timeout: 8000, maximumAge: 10 * 60 * 1000 });
 }
 
-function bootGeo() {
+
+/* ── 定位按鈕：iOS Safari 對「冇手勢」的定位請求經常唔彈提示，
+      所以提供一個真正嘅按鈕，並顯示目前狀態。 ── */
+function setLocChip(text, state) {
+  var btn = document.getElementById('locBtn');
+  if (!btn) return;
+  btn.textContent = text;
+  btn.className = 'loc-chip' + (state ? ' ' + state : '');
+}
+
+function markLocated(lat, lon) {
+  var bucket = bucketOf(lat, lon);
+  setLocChip('📍 ' + (bucket === 'outbound' ? '屯門一帶' : '觀塘一帶') + '・已自動選方向', 'ok');
+  window.setTimeout(function () { setLocChip('📍 更新位置', ''); }, 6000);
+}
+
+function locateFromButton() {
+  if (!('geolocation' in navigator)) { setLocChip('📍 此裝置不支援定位', 'fail'); return; }
+  setLocChip('📍 定位中…', 'busy');
+  navigator.geolocation.getCurrentPosition(function (pos) {
+    saveGeo(pos.coords.latitude, pos.coords.longitude);
+    applyLocation(pos.coords.latitude, pos.coords.longitude);
+    markLocated(pos.coords.latitude, pos.coords.longitude);
+  }, function (error) {
+    setLocChip(error && error.code === 1 ? '📍 定位被封鎖（設定 → Safari → 位置）' : '📍 定位失敗，再試一次', 'fail');
+  }, { enableHighAccuracy: false, timeout: 10000, maximumAge: 10 * 60 * 1000 });
+}
+/* iOS Safari 有時要「用戶手勢」才會彈定位提示。
+   所以：未定位之前，任何一次點擊／觸控都會再試一次（只試一次）。 */
+var gestureTried = false;
+function tryLocateOnGesture() {
+  if (gestureTried) return;
+  if (readGeo()) { gestureTried = true; return; }
+  gestureTried = true;
+  requestFix();
+}
+document.addEventListener('pointerdown', tryLocateOnGesture, { passive: true, once: false });function bootGeo() {
   var cached = readGeo();
   if (cached) applyLocation(cached.lat, cached.lon);
   if (!('geolocation' in navigator)) return;
