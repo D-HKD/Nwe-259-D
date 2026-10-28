@@ -78,10 +78,6 @@ async function load(){
   }catch(e){$('errorBox').textContent=`暫時無法取得九巴資料：${e.message}`;$('errorBox').classList.remove('hidden')}
 }
 function clock(){let d=new Date();$('clock').textContent=new Intl.DateTimeFormat('zh-HK',{hour:'2-digit',minute:'2-digit',hour12:false,timeZone:'Asia/Hong_Kong'}).format(d)}
-document.querySelectorAll('.mode').forEach(b=>b.addEventListener('click',()=>{manualDirection=true;document.querySelectorAll('.mode').forEach(x=>x.classList.remove('active'));b.classList.add('active');direction=b.dataset.direction;load()}));
-$('refreshBtn').addEventListener('click',load);
-$('arrivalVerdict').addEventListener('click',editTarget);
-$('locBtn').addEventListener('click',locateFromButton);loadTarget();clock();setInterval(clock,1000);load();bootGeo();setInterval(function(){ if (!document.hidden) load(); }, 60000);
 
 /* ================================================================
    自動偵測位置 → 自動揀方向
@@ -174,6 +170,7 @@ function markLocated(lat, lon) {
 }
 
 function locateFromButton() {
+  manualDirection = false;
   if (!('geolocation' in navigator)) { setLocChip('📍 此裝置不支援定位', 'fail'); return; }
   setLocChip('📍 定位中…', 'busy');
   navigator.geolocation.getCurrentPosition(function (pos) {
@@ -181,7 +178,7 @@ function locateFromButton() {
     applyLocation(pos.coords.latitude, pos.coords.longitude);
     markLocated(pos.coords.latitude, pos.coords.longitude);
   }, function (error) {
-    setLocChip(error && error.code === 1 ? '📍 定位被封鎖（設定 → Safari → 位置）' : '📍 定位失敗，再試一次', 'fail');
+    setLocChip(error && error.code === 1 ? '📍 定位被封鎖・可手動揀返工／放工' : '📍 定位失敗・可手動揀方向', 'fail');
   }, { enableHighAccuracy: false, timeout: 10000, maximumAge: 10 * 60 * 1000 });
 }
 /* iOS Safari 有時要「用戶手勢」才會彈定位提示。
@@ -193,7 +190,31 @@ function tryLocateOnGesture() {
   gestureTried = true;
   requestFix();
 }
-document.addEventListener('pointerdown', tryLocateOnGesture, { passive: true, once: false });function bootGeo() {
+document.addEventListener('pointerdown', tryLocateOnGesture, { passive: true, once: false });
+/* ================================================================
+   記住手動揀嘅方向
+   ---------------------------------------------------------------
+   APK 包裝（例如 WebToApp 的 GeckoView）未必轉發定位權限，
+   咁定位就會永遠失敗。所以手動揀過之後要記住，下次開都係嗰個方向。
+   ================================================================ */
+var DIR_KEY = 'nd259-dir-v1';
+
+function saveDirection(value) {
+  try { localStorage.setItem(DIR_KEY, value); } catch (e) {}
+}
+
+function restoreDirection() {
+  try {
+    var saved = localStorage.getItem(DIR_KEY);
+    if (saved !== 'outbound' && saved !== 'inbound') return false;
+    direction = saved;
+    manualDirection = true;
+    document.querySelectorAll('.mode').forEach(function (b) {
+      b.classList.toggle('active', b.dataset.direction === saved);
+    });
+    return true;
+  } catch (e) { return false; }
+}function bootGeo() {
   var cached = readGeo();
   if (cached) applyLocation(cached.lat, cached.lon);
   if (!('geolocation' in navigator)) return;
@@ -303,3 +324,35 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js').catch(function () { /* 失敗就照常運作 */ });
   });
 }
+/* ================================================================
+   啟動
+   ---------------------------------------------------------------
+   一定要放在檔案最後：上面的 var（DIR_KEY、manualDirection…）要先賦值，
+   否則還原方向會讀到 undefined（2026-10-28 修）。
+   ================================================================ */
+function startApp() {
+  document.querySelectorAll('.mode').forEach(function (b) {
+    b.addEventListener('click', function () {
+      manualDirection = true;
+      saveDirection(b.dataset.direction);
+      document.querySelectorAll('.mode').forEach(function (x) { x.classList.remove('active'); });
+      b.classList.add('active');
+      direction = b.dataset.direction;
+      load();
+    });
+  });
+
+  $('refreshBtn').addEventListener('click', load);
+  $('arrivalVerdict').addEventListener('click', editTarget);
+  $('locBtn').addEventListener('click', locateFromButton);
+
+  loadTarget();
+  clock();
+  setInterval(clock, 1000);
+  restoreDirection();
+  load();
+  bootGeo();
+  setInterval(function () { if (!document.hidden) load(); }, 60000);
+}
+
+startApp();

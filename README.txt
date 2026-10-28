@@ -105,3 +105,23 @@ Upload all files to the repository root and enable GitHub Pages from main / root
    - 巴士圖右上角殘留天空：用限定區域遮罩清走（保留車窗反光）
    - 夜晚「親愛的小提示」文字睇唔到：卡片文字改用主題色變數
    - 目的地「約 2 分鐘後到達觀塘」的錯誤推算（見上節 Bug fix）
+2026-10-28 第三批：APK（WebToApp）定位問題
+------------------------------------------
+症狀：手機 APK 內定位完全冇反應，網站版正常。
+
+原因（分析 APK 得出）：
+  - APK 由 WebToApp 打包，瀏覽核心係 GeckoView（Firefox），不是 Chrome
+  - WebToApp 會用自家 geolocation shim 覆寫 window.navigator.geolocation
+  - shim 由 geolocationEnabled / geolocationPolicy 兩個設定控制
+  - 若未在 WebToApp 後台開啟「定位」，每次呼叫會即刻回 PERMISSION_DENIED
+  - Manifest 本身有 ACCESS_FINE_LOCATION，所以不是 Android 權限問題
+
+網站端補救：
+  - 手動揀「返工／放工」會存入 localStorage（nd259-dir-v1），下次開直接套用
+  - 定位被封鎖時按鈕顯示「📍 定位被封鎖・可手動揀返工／放工」
+  - 撳「用我位置」會重新啟用自動定位
+
+同時修正一個真 bug：
+  啟動碼原本寫在檔案中段，比 var DIR_KEY / var manualDirection 早執行，
+  導致 restoreDirection() 讀到 undefined、永遠還原失敗。
+  已把啟動搬去檔案最後（startApp()）。
