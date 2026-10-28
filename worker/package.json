@@ -1,0 +1,10 @@
+{
+  "name": "259d-kmb-proxy",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "deploy": "wrangler deploy",
+    "dev": "wrangler dev"
+  }
+}

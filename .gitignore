@@ -1,0 +1,4 @@
+# wrangler 本機快取（含帳戶資訊）
+worker/.wrangler/
+node_modules/
+.DS_Store

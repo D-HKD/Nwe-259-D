@@ -1,0 +1,9 @@
+name = "259d-kmb-proxy"
+main = "src/index.js"
+compatibility_date = "2026-01-01"
+
+# 前端（https://d-hkd.github.io/Nwe-259-D/）直接呼叫此 Worker，
+# CORS 由程式碼的 corsHeaders() 處理，不需要額外設定。
+#
+# 部署：npx wrangler deploy
+# 驗證：curl "https://259d-kmb-proxy.<你的子網域>.workers.dev/api/259d?direction=outbound"

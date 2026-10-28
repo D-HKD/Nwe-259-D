@@ -1,9 +1,17 @@
 {
-  "name":"親愛的返工・放工時間表",
-  "short_name":"259D通勤助手",
-  "start_url":"./",
-  "display":"standalone",
-  "background_color":"#172447",
-  "theme_color":"#172447",
-  "icons":[]
+  "name": "親愛的返工・放工時間表",
+  "short_name": "259D 通勤",
+  "description": "259D 湖景邨 ↔ 觀塘的實時到站、四季／時段／天氣主題版面",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0a1122",
+  "theme_color": "#102653",
+  "lang": "zh-Hant",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
 }
