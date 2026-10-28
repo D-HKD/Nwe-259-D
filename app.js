@@ -173,11 +173,21 @@ function locateFromButton() {
   manualDirection = false;
   if (!('geolocation' in navigator)) { setLocChip('📍 此裝置不支援定位', 'fail'); return; }
   setLocChip('📍 定位中…', 'busy');
-  navigator.geolocation.getCurrentPosition(function (pos) {
+  function onFix(pos) {
     saveGeo(pos.coords.latitude, pos.coords.longitude);
     applyLocation(pos.coords.latitude, pos.coords.longitude);
     markLocated(pos.coords.latitude, pos.coords.longitude);
-  }, function (error) {
+  }
+
+  navigator.geolocation.getCurrentPosition(onFix, function (error) {
+    // code 3 = TIMEOUT：室內或 WebView 較慢，再試一次並放長時間
+    if (error && error.code === 3) {
+      setLocChip('📍 定位中…（室內會慢啲）', 'busy');
+      navigator.geolocation.getCurrentPosition(onFix, function (again) {
+        setLocChip(again && again.code === 1 ? '📍 定位被封鎖・可手動揀返工／放工' : '📍 定位失敗・可手動揀方向', 'fail');
+      }, { enableHighAccuracy: false, timeout: 25000, maximumAge: 10 * 60 * 1000 });
+      return;
+    }
     setLocChip(error && error.code === 1 ? '📍 定位被封鎖・可手動揀返工／放工' : '📍 定位失敗・可手動揀方向', 'fail');
   }, { enableHighAccuracy: false, timeout: 10000, maximumAge: 10 * 60 * 1000 });
 }
@@ -214,6 +224,42 @@ function restoreDirection() {
     });
     return true;
   } catch (e) { return false; }
+}
+/** 同步兩個 tab 的 active 狀態（避免重複寫同一段）。 */
+function syncTabs() {
+  document.querySelectorAll('.mode').forEach(function (b) {
+    b.classList.toggle('active', b.dataset.direction === direction);
+  });
+}
+
+/**
+ * 冇定位、又冇手動揀過時的預設方向（按時間）。
+ *
+ * APK 包裝（WebToApp + GeckoView）經常唔轉發定位權限，所以用時間做後備：
+ *   平日 05:00–11:59 → 返工（往鯉魚門邨）
+ *   16:00–22:59      → 放工（往屯門）
+ * 其餘時間唔估，沿用預設。
+ *
+ * 這個預設「可以被定位覆寫」，所以唔會妨礙有 GPS 的裝置。
+ */
+function pickDefaultByTime() {
+  var now = new Date();
+  var hour = now.getHours();
+  var day = now.getDay();
+  var weekday = day >= 1 && day <= 5;
+  if (weekday && hour >= 5 && hour < 12) return 'outbound';
+  if (hour >= 16 && hour < 23) return 'inbound';
+  return null;
+}
+
+function applyDefaultByTime() {
+  var guess = pickDefaultByTime();
+  if (!guess || guess === direction) return false;
+  direction = guess;
+  syncTabs();
+  setLocChip(guess === 'outbound' ? '🕒 朝早：預設返工方向' : '🕒 傍晚：預設放工方向', 'ok');
+  window.setTimeout(function () { setLocChip('📍 用我位置，自動揀方向', ''); }, 6000);
+  return true;
 }function bootGeo() {
   var cached = readGeo();
   if (cached) applyLocation(cached.lat, cached.lon);
@@ -349,7 +395,7 @@ function startApp() {
   loadTarget();
   clock();
   setInterval(clock, 1000);
-  restoreDirection();
+  if (!restoreDirection()) applyDefaultByTime();
   load();
   bootGeo();
   setInterval(function () { if (!document.hidden) load(); }, 60000);
