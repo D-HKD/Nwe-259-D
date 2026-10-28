@@ -10,7 +10,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="icon" href="icon-192.png" type="image/png">
-<link rel="stylesheet" href="style.css?v=20261028-b">
+<link rel="stylesheet" href="style.css?v=20261028-e">
 <title>親愛的返工・放工時間表</title>
 </head>
 <body>
@@ -57,6 +57,7 @@
   </div>
   <div class="progress"><span id="progressBar"></span></div>
   <div class="later-head"><b>之後班次</b><span>每 60 秒更新</span></div>
+  <div id="gapNote" class="gap-note"></div>
   <div id="etaList" class="eta-list"><div class="loading">正在更新班次…</div></div>
 </section>
 
@@ -69,12 +70,14 @@
   </div>
   <div class="second-stop-note" id="secondStopNote">正在取得實時資料…</div>
   <div class="later-head"><b>之後班次</b><span>每 60 秒更新</span></div>
+  <div id="gapNote" class="gap-note"></div>
   <div id="secondEtaList" class="eta-list"><div class="loading">正在更新班次…</div></div>
 </section>
 
 <div class="two-col">
   <section class="traffic-card card"><div class="card-title">🚦 今日條路點？ <span id="trafficUpdated">—</span></div><div id="trafficEmoji" class="traffic-emoji">🙂</div><div id="trafficLabel" class="traffic-label">正在分析</div><div id="trafficNote" class="traffic-note">根據實時班次推算</div></section>
-  <section class="home-card card"><div class="card-title">🏠 <span id="destinationHeading">預計到達觀塘</span></div><div id="destinationTime" class="home-time">--:--</div><div id="destinationName" class="home-name">觀塘道休憩處</div><div id="destinationMeta" class="home-meta">等待實時資料</div><div class="house-art">🏠💕</div></section>
+  <section class="home-card card"><div class="card-title">🏠 <span id="destinationHeading">預計到達觀塘</span></div><div id="destinationTime" class="home-time">--:--</div><div id="destinationName" class="home-name">觀塘道休憩處</div><div id="destinationMeta" class="home-meta">等待實時資料</div>
+      <div id="arrivalVerdict" class="home-verdict"></div><div class="house-art">🏠💕</div></section>
 </div>
 
 <section class="love-card card"><div class="love-icon">💗</div><div><h2>親愛的小提示</h2><p id="loveMessage">早晨呀親愛的，返工路上小心。<br>今日都加油呀，我支持你 ❤️</p></div><div class="love-art">🥰<br><span>我等你！</span></div></section>
@@ -82,6 +85,6 @@
 <div id="errorBox" class="error hidden"></div>
 <div class="footer-love">♡ 無論幾遠，屋企永遠有你嘅位置 ♡</div>
 </main>
-<script src="theme.js?v=20261028-b"></script>`n<script src="app.js?v=20261028-b"></script>
+<script src="theme.js?v=20261028-e"></script>`n<script src="app.js?v=20261028-e"></script>
 </body>
 </html>

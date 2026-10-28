@@ -222,3 +222,48 @@ html[data-part="dusk"] .hero-shade{
     linear-gradient(90deg,rgba(60,26,10,.55) 0%,rgba(70,32,16,.30) 48%,rgba(80,36,18,.10) 100%),
     linear-gradient(180deg,rgba(255,180,120,.10) 30%,rgba(40,16,8,.72) 100%);
 }
+/* ── 修正：巴士圖貼紙感（原本有 inner border + 底色，圖貼死框邊） ── */
+.bus-visual{
+  background:radial-gradient(circle at 52% 62%,rgba(255,190,140,.20),rgba(255,190,140,0) 68%);
+  box-shadow:none;
+  padding:6px;
+  overflow:visible;
+}
+.bus-visual img{
+  filter:drop-shadow(0 8px 12px rgba(0,0,0,.38));
+  transform:none;
+}
+.second-bus-art{
+  background:radial-gradient(circle at 52% 60%,rgba(255,190,140,.16),rgba(255,190,140,0) 70%);
+  padding:6px;
+  overflow:visible;
+}
+.second-bus-art img{filter:drop-shadow(0 7px 10px rgba(0,0,0,.34))}
+
+/* ── 修正：夜晚「親愛的小提示」文字睇唔到（紅字／深字貼深底） ── */
+.love-card h2,.love-card p{color:var(--card-ink)}
+html[data-dark="1"] .love-card p{color:#c9d4ea}
+html[data-dark="1"] .love-card h2{color:var(--accent-2)}
+html[data-dark="1"] .traffic-note,html[data-dark="1"] .home-meta{color:#9fb0cd}
+html[data-dark="1"] .card-title span{color:#8fa2c2}
+html[data-dark="1"] .error{background:#2a1520;color:#ffb3c6;border-color:#7a2d45}
+/* 「早／遲」與班次間隔提示 */
+.home-verdict{margin-top:8px;font-size:11px;font-weight:900;letter-spacing:.01em}
+.home-verdict.early{color:#2f9e63}
+.home-verdict.ontime{color:#6b7a90}
+.home-verdict.late{color:#d84a6b}
+html[data-dark="1"] .home-verdict.early{color:#6ee2a0}
+html[data-dark="1"] .home-verdict.ontime{color:#a4b6d2}
+html[data-dark="1"] .home-verdict.late{color:#ff8aa6}
+.gap-note{margin:8px 0 2px;font-size:10px;font-weight:800;color:var(--card-sub);position:relative;z-index:3}
+.gap-note.warn{color:#ffb26b}
+html[data-dark="1"] .gap-note{color:#a9bbd8}
+html[data-dark="1"] .gap-note.warn{color:#ffc37a}
+/* 首頁卡多了一行「早／遲」，需要少少高度，避免被 overflow 剪走 */
+.traffic-card,.home-card{min-height:212px}
+.home-card{overflow:visible}
+.home-card .house-art{bottom:6px;right:2px;opacity:.9}
+.home-verdict{margin-top:7px;line-height:1.35;max-width:170px;cursor:pointer}
+/* 預設（未設定目標）狀態都要睇得到 */
+.home-verdict{color:var(--card-sub)}
+.home-verdict::after{content:" ✎";font-size:10px;opacity:.7}
